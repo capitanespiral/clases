@@ -1,0 +1,17 @@
+matrices listo! (agregar eventualmente, cofactores, adjunta, determinante,polinomio caracteristico, inversa.) idea de impresion que no ponga () asi sera facilicimo imprimir a archivo!. Agregar en general pra todas las clases una funcion que mantenga el tamaño pero lleve a cero los valores!
+odeint listo! (rk2 y rk2 adaptativo, velocity-verlet adaptativo  y pefrl adaptativo,preditor-corrector. Hacer versiones de una sola derivada)
+duales listo! (agregar para mas derivadas (de mas cantidad))
+racionales listo! 
+polinomios listo!
+interpoladores falta lagrange con distribucion rara y eficientizar
+
+Eventualmente eficientiZAR TODO
+Probar odeints con mas cuerpos y sistema planetario por ejemplo
+Repasa COMO funcionan tus weas
+
+Recuerda que tienes que probar tooodas las funciones pa ver cual tira advertencia lol.
+
+*Para mañana, ver si runge kutta funciona para mas cuerpos y mas coordenadas
+desarmar archivos que tira
+makefile con gnuplot y weas que tire rk4.
+familiarizarte con tus cosas
