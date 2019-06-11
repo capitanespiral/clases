@@ -7,6 +7,8 @@
 using namespace std;
 typedef unsigned int uint;
 
+//Falta su MAP!
+
 //Clase de matrices con templates
 template <class T>
 class matriz{
@@ -292,29 +294,35 @@ matriz<T> cat(const matriz<T> &m,const matriz<T> &n,char a='f'){
 //Funcion que revisa si es tridiagonal o no.
 template <class T>
 bool tridiag(const matriz<T> &m){
-  int marca=0;
-  for(int i=0;i<m.fila();++i){
-    for(int j=0;j<m.colu();++j){
-      if(i==j || (i+1)==j || (j+1)==i) continue;
-      if(m(i,j)!=0) marca+=1;
+  if(m.fila()!=m.colu()) return false;
+  else{
+    for(int i=0;i<m.fila();++i){
+      for(int j=0;j<m.colu();++j){
+	if(i==j || (i+1)==j || (j+1)==i) continue;
+	if(m(i,j)!=0) {
+	  return false;
+	}
+      }
     }
   }
-  if(marca==0) return true;
-  else return false;
+  return true;
 }
 
 //Funcion que revisa si es tridiagonal periodica o no
 template <class T>
 bool tridiag_p(const matriz<T> &m){
-  int marca=0;
-  for(int i=0;i<m.fila();++i){
-    for(int j=0;j<m.colu();++j){
-      if(i==j || (i+1)==j || (j+1)==i || (i==0 && j==m.colu()-1) || (j==0 && i==m.fila()-1)) continue;
-      if(m(i,j)!=0) marca+=1;
+    if(m.fila()!=m.colu()) return false;
+  else{
+    for(int i=0;i<m.fila();++i){
+      for(int j=0;j<m.colu();++j){
+	if(i==j || (i+1)==j || (j+1)==i || (i==0 && j==m.colu()-1) || (j==0 && i==m.fila()-1)) continue;
+	if(m(i,j)!=0) {
+	  return false;
+	}
+      }
     }
   }
-  if(marca==0) return true;
-  else return false;
+  return true;
 }
 
 //Algoritmo de thomas para matrices tridiagonales (de no estar seguro, puedo revisar con la funcion de arriba.//Eficientizar (ifs, j's, contenedor)
@@ -324,21 +332,18 @@ matriz<T> thomas(const matriz<T> &m,const vector<T> &v){//Recibo matriz tridiago
     T c,d,temp;
     int j=0;
     matriz<T> cont(2,v.size());
-    for(int i=0;i<m.fila();++i){
-      if(i==0){
-	c=m(i,j+1)/m(i,j);d=v[i]/m(i,j);
-	cont(0,0)=c;cont(1,0)=d;
-	j+=1;continue;
-      }
-      temp=(m(i,j)-m(i,j-1)*cont(0,i-1));
-      c=m(i,j+1)/temp;
-      d=(v[i]-m(i,j-1)*cont(1,i-1))/temp;
-      cont(0,i)=c;cont(1,i)=d;j+=1;
+    c=m(0,1)/m(0,0);d=v[0]/m(0,0);    
+    cont(0,0)=c;cont(1,0)=d;
+    for(int i=1;i<m.fila();++i){
+      temp=(m(i,i)-m(i,i-1)*cont(0,i-1));
+      c=m(i,i+1)/temp;
+      d=(v[i]-m(i,i-1)*cont(1,i-1))/temp;
+      cont(0,i)=c;cont(1,i)=d;
     }
-    matriz<T> res(1,v.size());
-    for(int n=m.fila()-1;n>=0;--n){
-      if(n==m.fila()-1){res(0,n)=cont(1,n);continue;}
-      res(0,n)=cont(1,n)-cont(0,n)*res(0,n+1);
+    matriz<T> res(v.size(),1);
+    res(m.fila()-1,0)=cont(1,m.fila()-1);
+    for(int n=m.fila()-2;n>=0;--n){
+      res(n,0)=cont(1,n)-cont(0,n)*res(n+1,0);
     }
     return res;
   }
@@ -372,10 +377,10 @@ matriz<T> ANW(const matriz<T> &m,const vector<T> &v){
   }
   //Ahora y tengo todos los q y s en teoria.Reutilizo dj para xn
   dj=(v[v.size()-1]-m(m.fila()-1,0)*temp(3,0)-m(m.fila()-1,m.colu()-2)*temp(3,m.fila()-2))/(m(m.fila()-1,m.colu()-1)-m(m.fila()-1,0)*temp(4,0)-m(m.fila()-1,m.colu()-2)*temp(4,m.fila()-2));
-  matriz<T> res(1,v.size());
+  matriz<T> res(v.size(),1);
   for(int i=0;i<m.fila()-1;++i)
-    res(0,i)=temp(3,i)-dj*temp(4,i);
-  res(0,v.size()-1)=dj;
+    res(i,0)=temp(3,i)-dj*temp(4,i);
+  res(v.size()-1,0)=dj;
   return res;
 }
 

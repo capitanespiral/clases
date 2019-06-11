@@ -63,18 +63,18 @@ matriz<poli<double>> i_pol::spline_p(){
   //Ahora sacamos las M (seg derivada evaluada), falta M0 y Mn, asi que los "cateo"
   matriz<double> m;
   coef=ANW(coef,coef1);
-  m(0,0)=(3/(hi1+h1))*(k1/h1-ki1/hi1-h1*coef(0,0)/6-hi1*coef(0,cant-3)/6);
-  coef=cat(m,coef);coef=cat(coef,m);
+  m(0,0)=(3/(hi1+h1))*(k1/h1-ki1/hi1-h1*coef(0,0)/6-hi1*coef(cant-3,0)/6);
+  coef=cat(m,coef,'c');coef=cat(coef,m,'c');
   //Armamos polinomios y los guardamos en res.
   poli<double> p,temp,temp1;matriz<poli<double>> res(cant-1,1,p);
   poli<double> lineal(1,1);
   for(int i=1;i<cant;++i){
     temp=-1*lineal;temp1=lineal;
     hi=datos(i,0)-datos(i-1,0);
-    ki=(datos(i-1,1)-(coef(0,i-1)*hi*hi)/6)/hi;
-    ki1=(datos(i,1)-(coef(0,i)*hi*hi)/6)/hi;
+    ki=(datos(i-1,1)-(coef(i-1,0)*hi*hi)/6)/hi;
+    ki1=(datos(i,1)-(coef(i,0)*hi*hi)/6)/hi;
     temp[0]=datos(i,0);temp1[0]=-1*datos(i-1,0);
-    p=(coef(0,i-1)/(6*hi))*temp*temp*temp+(coef(0,i)/(6*hi))*temp1*temp1*temp1+ki*temp+ki1*temp1;
+    p=(coef(i-1,0)/(6*hi))*temp*temp*temp+(coef(i,0)/(6*hi))*temp1*temp1*temp1+ki*temp+ki1*temp1;
     res(i-1,0)=p;
   }
   return res;
@@ -107,17 +107,17 @@ matriz<poli<double>> i_pol::spline(){
   //Ahora sacamos las M (seg derivada evaluada), falta M0 y Mn que son cero (para caso natural), asi que los "cateo"
   matriz<double> m;
   coef=thomas(coef,coef1);
-  coef=cat(m,coef);coef=cat(coef,m);
+  coef=cat(m,coef,'c');coef=cat(coef,m,'c');
   //Armamos polinomios y los guardamos en res.
   poli<double> p,temp,temp1;matriz<poli<double>> res(cant-1,1,p);
   poli<double> lineal(1,1);
   for(int i=1;i<cant;++i){
     temp=-1*lineal;temp1=lineal;
     hi=datos(i,0)-datos(i-1,0);
-    ki=(datos(i-1,1)-(coef(0,i-1)*hi*hi)/6)/hi;
-    ki1=(datos(i,1)-(coef(0,i)*hi*hi)/6)/hi;
+    ki=(datos(i-1,1)-(coef(i-1,0)*hi*hi)/6)/hi;
+    ki1=(datos(i,1)-(coef(i,0)*hi*hi)/6)/hi;
     temp[0]=datos(i,0);temp1[0]=-1*datos(i-1,0);
-    p=(coef(0,i-1)/(6*hi))*temp*temp*temp+(coef(0,i)/(6*hi))*temp1*temp1*temp1+ki*temp+ki1*temp1;
+    p=(coef(i-1,0)/(6*hi))*temp*temp*temp+(coef(i,0)/(6*hi))*temp1*temp1*temp1+ki*temp+ki1*temp1;
     res(i-1,0)=p;
   }
   return res;

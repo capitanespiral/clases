@@ -13,7 +13,10 @@ int main(int argc, char* argv[]){
 	i_pol orale(m);
 	matriz<poli<double>> p=orale.spline_p();
 	cout<<p<<endl;
+	matriz<poli<double>> q=orale.spline();
+	matriz<double> pototo=puntos(q,orale,10000);
 	matriz<double> potito=puntos(p,orale,10000);
 	file("splinep",potito);
+	file("spline",pototo);
 	return 0;
 }
