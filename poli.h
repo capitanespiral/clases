@@ -33,6 +33,7 @@ class poli{
   T deriv(T);
   poli integ(T=0);
   T integ(T,T);
+  poli legendre(uint);
 };
 
 /////////////////////////CONSTRUCTORES////////////////////////////
@@ -85,11 +86,12 @@ poli<T>::poli(uint a,T b,T c){
   }
   else{
     grado=a;
-    vector<T> v(a,0);
+    vector<T> v(a+1,0);
     v.push_back(b);
     coef=v;
   }
 }
+
 
 //Constructor de copia
 template <class T>
@@ -336,5 +338,14 @@ ostream& operator<<(ostream &os,const poli<T> &p){
       os<<0;
   }
   return os;
+}
+
+template <class T>
+poli<T> poli<T>::legendre(uint n){
+  poli<T> temp(2,1);temp[1]=0;temp[0]*=-1;
+  poli<T> p(0,1);
+  for(uint i=1;i<=n;++i) p=p*temp;
+  for(uint i=1;i<=n;++i) p=(1/(2*double(i)))*p.deriv();
+  return p;
 }
 #endif

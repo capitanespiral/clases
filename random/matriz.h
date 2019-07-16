@@ -243,18 +243,15 @@ matriz<T> operator*(const matriz<T> &m,const matriz<T> &n){
 //Impresion de las matrices
 template <class T>
 ostream & operator<<(ostream &os,const matriz<T> &m){
-  os<<'(';
-  for(int i=0;i<m.fila()-1;++i){
-    for(int j=0;j<m.colu()-1;++j){
-      os<<m(i,j)<<' ';
+  for(int i=0;i<m.fila();++i){
+    if(i==0) os<<'(';else os<<' ';
+    for(int j=0;j<m.colu();++j){
+      if((i==m.fila()-1) && (j==m.colu()-1)) os<<m(i,j);
+      else os<<m(i,j)<<' ';
     }
-    os<<m(i,m.colu()-1);
-    os<<endl;
-    os<<' ';
+    if(i == m.fila()-1) os<<')';
+    else os<<endl;
   }
-  for(int j=0;j<m.colu()-1;++j)
-    os<<m(m.fila()-1,j)<<' ';
-  os<<m(m.fila()-1,m.colu()-1)<<')';
   return os;
 }
 
