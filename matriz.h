@@ -29,6 +29,8 @@ class matriz{
   int colu() const {return c;}//Lo mismi pero con cantidad de columnas
   matriz fila(int) const;//Entrega la fila i como nueva matriz (de 1xn)
   matriz colu(int) const;//Entrega la columna i como nueva matriz (de nx1)
+  void fila(int,const matriz&) &;
+  void colu(int,const matriz&) &;
   matriz tras() const;//Entrega la traspuesta
 };
 
@@ -139,6 +141,22 @@ matriz<T> matriz<T>::colu(int a) const{
   for(int i=0;i<f;++i)
     m(i,0)=(*this)(i,a);
   return m;
+}
+
+//Cambio fila 
+template <class T>
+void matriz<T>::fila(int a,const matriz<T> &v) &{
+  if(v.fila()!=1) cout<<"Cuidado, cambio de fila erróneo"<<endl;
+  for(int i=0;i<c;++i)
+    (*this)(a,i)=v(0,i);
+}
+
+//cambio columna
+template <class T>
+void matriz<T>::colu(int a,const matriz<T> &v) &{
+  if(v.colu()!=1) cout<<"Cuidado, cambio de columna erróneo"<<endl;
+  for(int i=0;i<f;++i)
+    (*this)(i,a)=v(i,0);
 }
 
 //Devuelvo la traspuesta
@@ -429,6 +447,41 @@ void clean(matriz<T> &m,T a=0){
     for(int j=0;j<m.colu();++j){
       m(i,j)=a;
     }
+  }
+}
+
+
+//Resuelve ecuaciones lineales, espera matriz y matriz columna (vector). Mas adelante que saque determinante y analice si es singular o no (tambien podria separar triangulacion o algo asi)
+template <class T>
+matriz<T> sist_ec_lin(const matriz<T> &m,const matriz<T> &v){
+  matriz<T> res(v.fila(),1);
+  if(m.fila()==m.colu() && m.colu()==v.fila() && v.colu()==1){
+    T cont=abs(m(0,0));matriz<T> aux;
+    int filita;
+    matriz<T> temp=cat(m,v);
+    for(int i=0;i<temp.fila();++i){
+      for(int h=i;h<temp.fila();++h){
+	if(abs(temp(h,i))>cont) {cont=abs(temp(h,0));filita=h;}
+      }
+      aux=temp.fila(i);
+      temp.fila(i,temp.fila(filita));
+      temp.fila(filita,aux);//Cambie las filas
+      for(int j=i+1;j<temp.fila();++j){
+	aux=temp.fila(j)-(temp(j,i)/temp(i,i))*temp.fila(i);
+	temp.fila(j,aux);
+      }
+    }
+    for(int i=temp.fila()-1;i>=0;--i){
+      res(i,0)=temp(i,temp.colu()-1)/temp(i,i);
+      for(int j=i+1;j<=temp.fila()-1;++j){
+	res(i,0)=res(i,0)-res(j,0)*(temp(i,j)/temp(i,i));
+      }
+    }
+    return res;
+  }
+  else{
+    cout<<"No se entregaron las dimensiones correctas en las matrices"<<endl;
+    return res;
   }
 }
 
