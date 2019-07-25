@@ -44,20 +44,21 @@ T gauss_leg(T (*f)(T,T),T a, T b,int N,T aux){
 template <class T>
 T romberg(T (*f)(T),T a,T b,int max=20,double error = 1e-8){
   T acum=0;
-  T hn,hm;
+  T hm=1;
   bool flag=true;
   int I;
   matriz<T> m(max,max);
-  m(0,0)=0.5*(b-a)*((*f)(a)+(*f)(b));
+  T hn=b-a;
+  m(0,0)=0.5*hn*((*f)(a)+(*f)(b));
   for(int i=1;i<max;++i){
-    hn=(b-a)*pow(0.5,i);
+    hn=hn/2.;
     for(int k=1;k<=pow(2,i-1);++k) acum=acum+(*f)(a+(2*k-1)*hn);
     m(i,0)=0.5*m(i-1,0)+hn*acum;
     for(int j=1;j<=i;++j){
-      hm=1/T(pow(4,j)-1);
-      m(i,j)=m(i,j-1)+hm*(m(i,j-1)-m(i-1,j-1));
+      hm=hm*4;
+      m(i,j)=m(i,j-1)+(m(i,j-1)-m(i-1,j-1))/(hm-1);
     }
-    acum=0;
+    acum=0;hm=1;
     if(abs(m(i,i)-m(i,i-1))<error) {flag=!flag;I=i;break;}
   }
   if(flag) {cout<<"No se alcanzó el error deseado"<<endl;return m(0,0);}
