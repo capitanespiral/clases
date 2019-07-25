@@ -18,7 +18,7 @@ class poli{
  public://estos se explicaran en su definicion
   poli();
   poli(uint, vector<T>);
-  poli(uint,T=0,T=1);
+  poli(uint,T=0,int=1);
   poli(const poli&);
   poli& operator=(const poli&);
   T operator[](int) const;
@@ -28,8 +28,8 @@ class poli{
   poli operator-();
   poli operator-(poli);
   void b_grad();
-  T operator()(T);
-  poli deriv();
+  T operator()(T) const &;
+  poli deriv() const &;
   T deriv(T);
   poli integ(T=0);
   T integ(T,T);
@@ -78,7 +78,7 @@ poli<T>::poli(uint i, vector<T> v){//grado de mayor a menor en el vector entrega
 
 //Constructor que recibe el grado, y permite rellenar todos los coeficientes con un valor 'b' o solo el de mayor grado y todos los demas cero (primera opcion por default).
 template <class T>
-poli<T>::poli(uint a,T b,T c){
+poli<T>::poli(uint a,T b,int c){
   if(c==1){
     grado=a;
     vector<T> v(a+1,b);
@@ -86,11 +86,11 @@ poli<T>::poli(uint a,T b,T c){
   }
   else{
     grado=a;
-    vector<T> v(a+1,0);
+    vector<T> v(a,T(0));
     v.push_back(b);
     coef=v;
   }
-}
+} 
 
 
 //Constructor de copia
@@ -179,18 +179,42 @@ void poli<T>::b_grad(){
   grado-=1;
 }
 
-//Evaluacion del polinomio en algun valor 'a'
+//Evaluacion por tipo de la misma clase
 template <class T>
-T poli<T>::operator()(T a){
+T poli<T>::operator()(T a) const &{
   T acum=0;
   for(uint i=0;i<=this->grado;++i)
     acum+=(*this)[i]*pow(a,i);
   return acum;
 }
 
+//mi version de pow
+template <class U>
+U ppow(U a,uint i){
+  if(i==0) return U(1);
+  else{
+    U temp(1);
+    for(uint j=1;j<=i;++j){
+      temp=temp*a;
+    }
+    return temp;
+  }
+}
+
+//Evaluacion del polinomio en algun valor 'a', cuando este es de otro tipo
+template <class T,class U>
+U eval(poli<T> p,U a){
+  U acum(0);
+  for(uint i=0;i<=p.grad();++i)
+    acum=acum+p[i]*ppow(a,i);
+  return acum;
+}
+
+    
+  
 //Derivada, entrega nuevo polinomio
 template <class T>
-poli<T> poli<T>::deriv(){
+poli<T> poli<T>::deriv() const &{
   if(grado==0){
     vector<T> v={0};
     poli<T> p(0,v);
@@ -244,7 +268,7 @@ poli<T> operator*(const poli<T> &p, const poli<T> &q){
   vector<T> v(p.grad()+q.grad()+1,0);
   for(uint i=0;i<=p.grad();++i){
     for(uint j=0;j<=q.grad();++j){
-      v[i+j]+=p[i]*q[j];
+      v[i+j]=v[i+j]+p[i]*q[j];
     }
   }
   reverse(v.begin(),v.end());
@@ -257,7 +281,7 @@ template <class T,class U>
 poli<T> operator*(const poli<T> &p,U a){
   vector<T> v(p.grad()+1,0);
   for(uint i=0;i<=p.grad();++i)
-    v[i]+=T(a)*p[i];
+    v[i]=v[i]+T(a)*p[i];
   reverse(v.begin(),v.end());
   poli<T> h(p.grad(),v);
   return h;
@@ -268,10 +292,16 @@ template <class T,class U>
   poli<T> operator*(U a,const poli<T> &p){
   vector<T> v(p.grad()+1,0);
   for(uint i=0;i<=p.grad();++i)
-    v[i]+=T(a)*p[i];
+    v[i]=v[i]+T(a)*p[i];
   reverse(v.begin(),v.end());
   poli<T> h(p.grad(),v);
   return h;
+}
+
+//Division polinomio y otro
+template <class T,class U>
+	poli<T> operator/(const poli<T> &p,U a){
+		return p*(1/a);
 }
 
 //Division entre polinomios, p/q, no se usa directamente, se accede a traves de los operadores / y %. Por defecto entrega cuociente.
@@ -286,11 +316,11 @@ poli<T> div(const poli<T> &p,const poli<T>&q, char c='q'){
   poli<T> aux1(p);poli<T> aux2(q);
   for(uint i=0;i<=p.grad()-q.grad();++i){
     if(aux1.grad()+i!=p.grad()){
-      cuo.push_back(0);continue;
+      cuo.push_back(T(0));continue;
     }
     T a = aux1[aux1.grad()]/q[q.grad()];
     cuo.push_back(a);
-    poli<T> bla(aux1.grad()-aux2.grad(),a,0);
+    poli<T> bla((aux1.grad()-aux2.grad()),a,0);
     aux1.b_grad();aux2.b_grad();
     aux1=aux1-(aux2*bla);
     aux2=q;
@@ -319,27 +349,29 @@ poli<T> operator%(const poli<T> &p,const poli<T> &q){
 //Impresion de polinomios, se cuida no imprimir ceros (a menos que sea el unico elemento del polinomio), no imprimir + antes de un menos e imprimirlos de mayor a menos.
 template <class T>
 ostream& operator<<(ostream &os,const poli<T> &p){
-  for(int i=p.grad();i>=0;--i){
-    if(i==p.grad() && i!=0)
+  int j=int(p.grad());
+  for(int i=j;i>=0;--i){
+    if(i==j && i!=0)
       os<<p[i]<<"x^"<<i;
-    else if(p[i]<0){
+    else if(p[i]<T(0)){
       if(i!=0)
 	os<<p[i]<<"x^"<<i;
       else
 	os<<p[i];
     }
-    else if(p[i]>0){
+    else if(p[i]>T(0)){
       if(i!=0)
 	os<<'+'<<p[i]<<"x^"<<i;
       else
 	os<<'+'<<p[i];	
     }
-    else if(p[i]==0 && p.grad()==0)
+    else if(p[i]==T(0) && p.grad()==0)
       os<<0;
   }
   return os;
 }
 
+//Polinomio de legendre
 template <class T>
 poli<T> poli<T>::legendre(uint n){
   poli<T> temp(2,1);temp[1]=0;temp[0]*=-1;
@@ -347,5 +379,24 @@ poli<T> poli<T>::legendre(uint n){
   for(uint i=1;i<=n;++i) p=p*temp;
   for(uint i=1;i<=n;++i) p=(1/(2*double(i)))*p.deriv();
   return p;
+}
+
+//Cambia tipo de los coefs del polinomio al segundo tipo entregado
+template<class T,class U>
+poli<U> cambia_tipo(const poli<T> &p, U a){
+  vector<U> v;
+  for(uint i=0;i<=p.grad();++i){
+    v.push_back(U(p[p.grad()-i]));
+  }
+  poli<U> w(p.grad(),v);
+  return w;
+}
+
+//imprime cosas raras
+template <class T>
+void printea(const poli<T> &p){
+  for(int i=p.grad();i>0;--i)
+    cout<<p[i]<<"x^"<<i<<'+';
+  cout<<p[0];
 }
 #endif
