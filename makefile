@@ -4,7 +4,7 @@ OBJS = $(patsubst %.cc,%.o,$(SRCS))
 target = main.e
 FLGS = 
 
-all: $(target) clean run
+all: $(target) clean
 
 $(target): $(OBJS)
 	@$(CC) -o $@ $^

@@ -50,6 +50,33 @@ matriz<double> distr(double (*f)(double),double minf,double maxf,double minx,dou
   return res;
 }
 
+matriz<double> noise(const matriz<double> &m,double ruido,int num,bool columna){
+  rdom random;
+  matriz<double> res(m);
+  if(columna){
+    for(int i=0;i<m.fila();++i){
+      res(i,num)=random.drand(res(i,num)+ruido,res(i,num)-ruido);
+    }
+    return res;
+  }
+  else{
+    for(int i=0;i<m.colu();++i){
+      res(num,i)=random.drand(res(num,i)+ruido,res(num,i)-ruido);
+    }
+    return res;
+  }
+}
+
+matriz<double> dat_func(double (*f)(double),double first,double last,int pts){
+  matriz<double> res(pts,2);
+  double sep=(last-first)/pts;
+  for(int i=0;i<res.fila();++i){
+    res(i,0)=first;res(i,1)=(*f)(first);
+    first+=sep;
+  }
+  return res;
+}
+
 /*matriz<double> distr(double (*f)(double),double minf,double maxf,double minx,double maxx,char c,int pts){
   rdom random;
   double x,y,eval;
