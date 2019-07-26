@@ -20,17 +20,20 @@ double t(double a){
 double r(double a){return 1;}
 
 int main(){
-  matriz<double> m=dat_func(sin,0,15,300);
+  vector<double> v={1,4,4,7,6,2,4,0,2,9,7,1,8,1};
+  matriz<double> asd(v,2);
+  cout<<asd<<endl;
+  /* matriz<double> m=dat_func(sin,0,15,300);
   env_archivo("original.dat",m);
   m=noise(m,0.5,1);
   env_archivo("noise.dat",m);
-  matriz<double> n=rec_archivo("noise.dat",2,2.);
-  ajus_lin poto(n);
-  vector<double (*)(double)> w={sin,cos};
-  m=poto.min_cuad(w);
-  cout<<m<<endl;
-  n=evalua_coef(w,m,0,15,300);
-  env_archivo("ajuste.dat",n);
+  matriz<double> n=rec_archivo("noise.dat",2,2.);*/
+  ajus_lin poto(asd);
+  vector<double (*)(double)> w={t,g};
+  asd=poto.min_cuad(w);
+  cout<<asd<<endl;
+  /*n=evalua_coef(w,m,0,15,300);
+    env_archivo("ajuste.dat",n);*/
   
   return 0;
 }

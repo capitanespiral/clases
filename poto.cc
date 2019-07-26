@@ -1,13 +1,10 @@
-#include "matriz.h"
+#include "cuadratura.h"
 
-int main(){
-  vector<double> v={1,7,1,3,8,1,2,5,4};
-  vector<double> w={1,2,3,7};
-  matriz<double> m(3,v);
-  matriz<double> h(w,1);
-  cout<<m<<endl;
-  cout<<m.triang(true)<<endl;
-cout<<m.det(true)<<endl;
+double asd(double a){return 3*a*a+2;}
+
+int main(int argc,char* argv[]){
+  double a=montecarlo3d(-1.,1.,atoi(argv[1]));
+  cout<<a<<endl;
   return 0;
 
 }
