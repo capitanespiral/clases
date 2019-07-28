@@ -41,6 +41,57 @@ T gauss_leg(T (*f)(T,T),T a, T b,int N,T aux){
   return (b-a)*0.5*res;
 }
 
+//Gauss-legendre para dos integrales, con todos los limites definidos (integrando respecto a "y" primero, osea segundo parametro el c d y primer parametro a b.)
+template <class T>
+T gauss_leg2(T (*f)(T,T),T a,T b,T c,T d,int N){
+  poli<T> p;
+  p=p.legendre(N);
+  matriz<T> raices=raices_pol(p,'n',T(-1));
+  for(int i=0;i<raices.fila();++i)
+    if(abs(raices(i,0))<1e-15) raices(i,0)=0;
+  p=p.deriv();
+  matriz<T> pesos(N,1);
+  for(int i=0;i<pesos.fila();++i)
+    pesos(i,0)=2/((1-raices(i,0)*raices(i,0))*p(raices(i,0))*p(raices(i,0)));
+  T res=0;
+  for(int i=0;i<N;++i){
+    for(int j=0;j<N;++j){
+      res=res+pesos(i,0)*pesos(j,0)*(*f)((b-a)*0.5*raices(i,0)+(a+b)*0.5,(d-c)*0.5*raices(j,0)+(c+d)*0.5);
+    }
+  }
+  return 0.25*(b-a)*(d-c)*res;
+}
+
+
+//Doble integral cuando los limites de la interior son funciones. Por defecto, se integra y primero (o sea, el segundo valor de f), de manera que las funciones c y d estan en funcion de x.
+template <class T>
+T gauss_leg2(T (*f)(T,T),T a,T b,T (*c)(T),T (*d)(T),int N){
+  poli<T> p;
+  p=p.legendre(N);
+  matriz<T> raices=raices_pol(p,'n',T(-1));
+  for(int i=0;i<raices.fila();++i)
+    if(abs(raices(i,0))<1e-15) raices(i,0)=0;
+  p=p.deriv();
+  matriz<T> pesos(N,1);
+  for(int i=0;i<pesos.fila();++i)
+    pesos(i,0)=2/((1-raices(i,0)*raices(i,0))*p(raices(i,0))*p(raices(i,0)));
+  T res=0;
+  for(int i=0;i<N;++i){
+    res=res+pesos(i,0)*gauss_aux(f,c,d,pesos,raices,0.5*((b-a)*raices(i,0)+a+b));
+  }
+  return 0.5*(b-a)*res;
+}
+
+//Funcion auxiliar gauss_2 general
+template <class T>
+T gauss_aux(T (*f)(T,T),T (*c)(T),T (*d)(T),const matriz<T> &pesos,const matriz<T> &raices,T x){
+  T acum=T(0);
+  for(int i=0;i<pesos.fila();++i){
+    acum=acum+pesos(i,0)*f(x,0.5*((d(x)-c(x))*raices(i,0)+c(x)+d(x)));
+  }
+  return 0.5*(d(x)-c(x))*acum;
+}
+
 //Metodo de romberg, recibe funcion, valores donde integrar, pasos maximos y error esperado
 template <class T>
 T romberg(T (*f)(T),T a,T b,int max=20,double error = 1e-8){
