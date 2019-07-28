@@ -1,7 +1,7 @@
 #ifndef ODEINT_H
 #define ODEINT_H
 
-#include "matriz.h"
+#include "matriz.hh"
 #include <cmath>
 #include <fstream>
 #include <vector>

@@ -1,10 +1,10 @@
 #ifndef CUADRATURA_H
 #define CUADRATURA_H
 
-#include "poli.h"
-#include "ceros.h"
-#include "matriz.h"
-#include "random.h"
+#include "poli.hh"
+#include "ceros.hh"
+#include "matriz.hh"
+#include "random.hh"
 using namespace std;
 
 //integracion del trapezoide, recibe la funcion, de donde hasta donde integrar (a,b) y en cuanto subdividir el intervalo
@@ -71,22 +71,22 @@ T romberg(T (*f)(T),T a,T b,int max=20,double error = 1e-8){
 //Pa ajustarlo a cualquier problema, cambiar el penultimo if y la funcion que recibe
 template<class T>
 T montecarlo(T (*f)(T),T a,T b,int puntos,double densidad=500){
-  matriz<T> m((b-a)*densidad,1);
   rdom random;
+  T max=T(0);T cualquiera;
   bool neg=false;
-  for(int i=0;i<m.fila();++i){
-    m(i,0)=(*f)(((b-a)*i/densidad)+a);
-    if(m(i,0)<0) neg=true;
+  for(int i=0;i<(b-a)*densidad;++i){
+    cualquiera=(*f)(((b-a)*i/densidad)+a);
+    if(cualquiera>max) max=cualquiera;
+    if(cualquiera<0) neg=true;
   }
   if(neg) cout<<"Cuidado, valores menores que cero"<<endl;
-  T maxx=max(m);
   T x,y;int cont=0;
   for(int i=0;i<puntos;++i){
-    x=random.drand(b,a);y=random.drand(maxx+1,0);
+    x=random.drand(b,a);y=random.drand(max+1,0);
     if(y<=(*f)(x)) cont+=1;
     if(i%1000==0) random.upd();
   }
-  return cont*(b-a)*(maxx+1)/puntos;
+  return cont*(b-a)*(max+1)/puntos;
 }
 
 //Le dare 2 puntos, defino un cubo

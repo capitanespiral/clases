@@ -1,4 +1,4 @@
-#include "ajustelineal.h"
+#include "ajustelineal.hh"
 
 ajus_lin::ajus_lin(const matriz<double> &m){
   datos=m;

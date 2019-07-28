@@ -1,4 +1,4 @@
-#include "interpol.h"
+#include "interpol.hh"
 
 using namespace std;
 

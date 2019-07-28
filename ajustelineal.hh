@@ -1,7 +1,7 @@
 #ifndef AJUSTLIN_H
 #define AJUSTLIN_H
 
-#include "matriz.h"
+#include "matriz.hh"
 
 using namespace std;
 

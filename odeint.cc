@@ -1,4 +1,4 @@
-#include "odeint.h"
+#include "odeint.hh"
 
 //Defino uint (mas comodo)
 typedef unsigned int uint;

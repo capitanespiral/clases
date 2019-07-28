@@ -1,4 +1,4 @@
-#include "interpol.h"
+#include "interpol.hh"
 #include <iostream>
 #include <fstream>
 using namespace std;

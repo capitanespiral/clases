@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
-#include "matriz.h"
+#include "matriz.hh"
 #include <string>
 #include <fstream>
 

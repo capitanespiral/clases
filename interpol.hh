@@ -1,8 +1,8 @@
 #ifndef INTERPOL_H
 #define INTERPOL_H
 
-#include "matriz.h"
-#include "poli.h"
+#include "matriz.hh"
+#include "poli.hh"
 #include <fstream>
 #include <string>
 

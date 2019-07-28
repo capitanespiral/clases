@@ -1,5 +1,5 @@
-#include "ajustelineal.h"
-#include "random.h"
+#include "ajustelineal.hh"
+#include "random.hh"
 #include <iostream>
 #include <fstream>
 #include <cmath>

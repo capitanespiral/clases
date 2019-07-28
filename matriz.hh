@@ -31,6 +31,8 @@ class matriz{
   int colu() const {return c;}//Lo mismi pero con cantidad de columnas
   matriz fila(int) const;//Entrega la fila i como nueva matriz (de 1xn)
   matriz colu(int) const;//Entrega la columna i como nueva matriz (de nx1)
+  matriz fila(const matriz &);//Sumo a cada fila la matriz fila
+  matriz colu(const matriz &);//Sumo a cada columna la matriz columna
   void fila(int,const matriz&) &;
   void colu(int,const matriz&) &;
   matriz tras() const;//Entrega la traspuesta
@@ -163,6 +165,28 @@ void matriz<T>::colu(int a,const matriz<T> &v) &{
     (*this)(i,a)=v(i,0);
 }
 
+//Suma vector columna en cada columna
+template <class T>
+matriz<T> matriz<T>::colu(const matriz<T> &m){
+  matriz<T> res(*this);
+  for(int i=0;i<res.fila();++i){
+    for(int j=0;j<res.colu();++j)
+      res(i,j)=res(i,j)+m(i,0);
+  }
+  return res;
+}
+
+//Suma vector fila en cada fila
+template <class T>
+matriz<T> matriz<T>::fila(const matriz<T> &m){
+  matriz<T> res(*this);
+  for(int i=0;i<res.fila();++i){
+    for(int j=0;j<res.colu();++j)
+      res(i,j)=res(i,j)+m(0,j);
+  }
+  return res;
+}
+
 //Devuelvo la traspuesta
 template <class T>
 matriz<T> matriz<T>::tras() const{
@@ -207,6 +231,7 @@ matriz<T> matriz<T>::triang(bool cero) const{
   return temp;
 }
 
+//Da el determinante
 template <class T>
 T matriz<T>::det(bool cero) const{
   matriz<T> temp=(*this);
@@ -492,13 +517,20 @@ matriz<T> mod(const matriz<T> &m){
   return res;
 }
 
-//Mismo para para una fila o columna en especifico (por ahora solo fila)
+//Mismo para para una fila o columna en especifico (por default fila)
 template <class T>
-T mod(const matriz<T> &m,int a){
+T mod(const matriz<T> &m,int a,bool fila =true){
   T acum=0;
-  for(int i=0;i<m.colu();++i)
-    acum+=m(a,i)*m(a,i);
-  return sqrt(acum);
+  if(fila){
+    for(int i=0;i<m.colu();++i)
+      acum+=m(a,i)*m(a,i);
+    return sqrt(acum);
+  }
+  else{
+    for(int i=0;i<m.fila();++i)
+      acum+=m(i,a)*m(i,a);
+    return sqrt(acum);
+  }
 }
 
 //Obtener max de una matriz (mas adelante el minimo)
@@ -567,4 +599,36 @@ matriz<T> rec_archivo(string nombre,int columna,T a){
   archivo.close();
   return res;
 }
+
+//Multiplica los elementos de igual indice
+template<class T>
+matriz<T> mul_ele(const matriz<T> &m,const matriz<T> &n){
+	matriz<T> res;
+	if(m.fila()==n.fila() && m.colu()==n.colu()){
+		res=m;
+		for(int i=0;i<res.fila();++i){
+    			for(int j=0;j<res.colu();++j)
+      				res(i,j)=res(i,j)*n(i,j);
+  		}
+	}
+	else{
+		cout<<"No son iguales las matrices"<<endl;
+	}
+	return res;
+}
+
+//Devuelve matriz fila de los promedios de las columnas
+template<class T>
+matriz<T> prom(const matriz<T> &m){
+	matriz<T> res(1,m.colu());
+	T acum=0;	
+	for(int i=0;i<m.colu();++i){
+		for(int j=0;j<m.fila();++j){
+			acum+=m(j,i);			
+		}
+		res(0,i)=acum;acum=0;
+	}
+	return res;
+}
+
 #endif

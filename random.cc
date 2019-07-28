@@ -1,4 +1,4 @@
-#include "random.h"
+#include "random.hh"
 
 rdom::rdom(uint a){
   srand(a);

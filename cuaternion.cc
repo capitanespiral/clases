@@ -1,4 +1,4 @@
-#include "cuaternion.h"
+#include "cuaternion.hh"
 
 cuaternion::cuaternion():r(0),i(0),j(0),k(0)
 {}

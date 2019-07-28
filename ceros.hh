@@ -1,9 +1,10 @@
 #ifndef CEROS_H
 #define CEROS_H
 
-#include "poli.h"
-#include "matriz.h"
-#include "complejos.h"
+#include "poli.hh"
+#include "matriz.hh"
+#include "complejos.hh"
+#include "dif_finitas.hh"
 #include <cmath>
 
 typedef unsigned int uint;
@@ -44,6 +45,53 @@ T newton(const poli<U> &p,T seed=T(1),double error=1e-10){
   return xn;
 }
 
+//Metodo de newton multivariable, asumiendo que tengo las derivadas (jacobiana), usare por defecto matrices columna.
+template <class T>
+matriz<T> newton_n(matriz<T> (*f)(const matriz<T> &),const matriz<T (*)(const matriz<T> &)> &jac,const matriz<T> &seeds,double error=1e-10){
+  matriz<T> eval,deval,errorcito,res;
+  int i=0;
+  eval=(*f)(seeds);
+  deval=evalua_jac(jac,seeds);
+  errorcito=sist_ec_lin(deval,eval);
+  res=seeds-errorcito;
+  while(abs(mod(errorcito,0,false))>error && mod(errorcito,0,false)!=0 && i<1000){
+    eval=(*f)(res);deval=evalua_jac(jac,res);
+    errorcito=sist_ec_lin(deval,eval);
+    res=res-errorcito;++i;
+  }
+  if(i>=1000) cout<<"No convergió"<<endl;
+  return res;
+}
+
+//Same pero calculando jacobiana con diferencias finitas
+template <class T>
+matriz<T> newton_n(matriz<T> (*f)(const matriz<T> &),const matriz<T> &seeds,double error=1e-10){
+  matriz<T> eval,deval,errorcito,res;
+  int i=0;
+  eval=(*f)(seeds);
+  deval=jacob(f,seeds);
+  errorcito=sist_ec_lin(deval,eval);
+  res=seeds-errorcito;
+  while(abs(mod(errorcito,0,false))>error && mod(errorcito,0,false)!=0 && i<1000){
+    eval=(*f)(res);deval=jacob(f,res);
+    errorcito=sist_ec_lin(deval,eval);
+    res=res-errorcito;++i;
+  }
+  return res;
+}
+
+  
+template <class T>
+matriz<T> evalua_jac(const matriz<T (*)(const matriz<T> &)> &jac,const matriz<T> &valores){
+  matriz<T> res(jac.fila(),jac.colu());
+  for(int i=0;i<jac.fila();++i){
+    for(int j=0;j<jac.colu();++j){
+      res(i,j)=jac(i,j)(valores);
+    }
+  }
+  return res;
+}  
+  
 //biseccion, recibo funcion, intervalo [a,b] y error
 template <class T>
 T biseccion(T (*f)(T),T a=T(-10),T b=T(10),double error=1e-10){

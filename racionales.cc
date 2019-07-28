@@ -1,4 +1,4 @@
-#include "racionales.h"
+#include "racionales.hh"
 #include <cmath>
 using namespace std;
 
